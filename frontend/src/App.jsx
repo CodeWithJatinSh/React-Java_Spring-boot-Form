@@ -201,8 +201,6 @@ function App() {
     });
 
     const result = await response.json();
-
-    // ❌ Handle backend validation errors (400)
     if (!response.ok) {
       console.error("Validation Error:", result);
 
