@@ -81,6 +81,34 @@ form select:focus {
   background-color: #161616;
 }
 
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  transition: 0.2s ease;
+}
+
+/* Green for Edit */
+.edit-btn {
+  background: #27ae60;
+}
+.edit-btn:hover {
+  background: #1e8449;
+}
+
+/* Red for Delete */
+.delete-btn {
+  background: #e74c3c;
+}
+.delete-btn:hover {
+  background: #c0392b;
+}
+
 /* --------------------------------------------- */
 /* SUBMIT BUTTON */
 /* --------------------------------------------- */
@@ -118,17 +146,33 @@ button:active {
   box-shadow: 0 6px 24px rgba(0,0,0,0.45);
 }
 
-/* Center action buttons in cells */
+/* Default cell styling */
 .ag-cell {
   display: flex;
-  justify-content: center;
   align-items: center;
-}
-
-/* Prevent text overflow in cells */
-.ag-cell {
   overflow: visible !important;
   text-overflow: clip !important;
+}
+
+/* Left-aligned cells */
+.ag-cell.ag-left {
+  justify-content: flex-start !important;
+  text-align: left !important;
+}
+
+/* Center-aligned cells */
+.ag-cell.ag-center {
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Header alignment */
+.ag-header-cell.ag-left .ag-header-cell-label {
+  justify-content: flex-start !important;
+}
+
+.ag-header-cell.ag-center .ag-header-cell-label {
+  justify-content: center !important;
 }
 
 /* AG Grid Action Buttons */
@@ -140,12 +184,4 @@ button:active {
   cursor: pointer;
   color: #fff;
   font-weight: 600;
-}
-
-.edit-btn {
-  background-color: #4caf50;
-}
-
-.delete-btn {
-  background-color: #f44336;
 }

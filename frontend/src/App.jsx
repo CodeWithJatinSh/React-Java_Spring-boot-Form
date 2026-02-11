@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AgGridReact } from "ag-grid-react";
 import CryptoJS from "crypto-js";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 // AG Grid Styles
 import "ag-grid-community/styles/ag-theme-quartz.css";
@@ -12,6 +13,7 @@ import {
   TextFilterModule,
   NumberFilterModule,
   DateFilterModule,
+  CellStyleModule,
 } from "ag-grid-community";
 import { ModuleRegistry } from "ag-grid-community";
 
@@ -23,6 +25,7 @@ ModuleRegistry.registerModules([
   TextFilterModule,
   NumberFilterModule,
   DateFilterModule,
+  CellStyleModule,
 ]);
 
 function App() {
@@ -38,22 +41,12 @@ function App() {
   const [rowData, setRowData] = useState([]);
   const [editingId, setEditingId] = useState(null);
 
-  // Encryption key - Change this to your own secret key
   const ENCRYPTION_KEY = "Form1234";
 
-  // ---------------- ENCRYPTION FUNCTIONS ---------------------
+  // ---------------- PASSWORD ENCRYPTION ---------------------
 
   const encryptPassword = (password) => {
     return CryptoJS.AES.encrypt(password, ENCRYPTION_KEY).toString();
-  };
-
-  const decryptPassword = (encryptedPassword) => {
-    try {
-      const bytes = CryptoJS.AES.decrypt(encryptedPassword, ENCRYPTION_KEY);
-      return bytes.toString(CryptoJS.enc.Utf8);
-    } catch (error) {
-      return encryptedPassword; // Return as-is if decryption fails
-    }
   };
 
   // ---------------- DATE FORMATTERS ---------------------
@@ -61,7 +54,6 @@ function App() {
   const formatDOB = (value) => {
     if (!value) return "";
     const date = new Date(value);
-
     return `${date.getDate()} ${date.toLocaleString("en-US", {
       month: "short",
     })} ${date.getFullYear()}`;
@@ -70,7 +62,6 @@ function App() {
   const formatDate = (value) => {
     if (!value) return "";
     const date = new Date(value);
-
     const day = date.getDate();
     const month = date.toLocaleString("en-US", { month: "short" });
     const year = date.getFullYear();
@@ -78,61 +69,102 @@ function App() {
     const minutes = String(date.getMinutes()).padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     const formattedHours = hours % 12 || 12;
-
     return `${day} ${month} ${year}, ${formattedHours}:${minutes} ${ampm}`;
   };
 
   // ---------------- AG GRID COLUMNS ---------------------
 
   const columnDefs = [
-    { headerName: "Name", field: "name" },
-    { headerName: "Email", field: "email" },
-    { headerName: "Gender", field: "gender" },
-    { headerName: "City", field: "city" },
-    { 
-      headerName: "Password", 
-      field: "password",
-      // Show encrypted password as dots/asterisks
-      valueFormatter: (params) => params.value.substring(0, 10) + "..."
-    },
+  {
+    headerName: "S.No",
+    valueGetter: "node.rowIndex + 1",
+    width: 70,
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+    sortable: false,
+    filter: false,
+  },
 
-    {
-      headerName: "Date of Birth",
-      field: "dob",
-      valueFormatter: (params) => formatDOB(params.value),
-    },
-    {
-      headerName: "Created At",
-      field: "createdAt",
-      valueFormatter: (params) => formatDate(params.value),
-    },
-    {
-      headerName: "Updated At",
-      field: "updatedAt",
-      valueFormatter: (params) => formatDate(params.value),
-    },
-    {
-      headerName: "Edit",
-      width: 120,
-      cellRenderer: (params) => (
-        <button className="action-btn edit-btn" onClick={() => handleEdit(params.data)}>
-          Edit
-        </button>
-      ),
-    },
-    {
-      headerName: "Delete",
-      width: 120,
-      cellRenderer: (params) => (
-        <button className="action-btn delete-btn" onClick={() => handleDelete(params.data.id)}>
-          Delete
-        </button>
-      ),
-    },
-  ];
+  // LEFT ALIGN COLUMNS
+  {
+    headerName: "Name",
+    field: "name",
+    width: 160,
+    cellClass: "ag-left",
+    headerClass: "ag-left",
+  },
+  {
+    headerName: "Email",
+    field: "email",
+    width: 260,
+    cellClass: "ag-left",
+    headerClass: "ag-left",
+  },
+
+  // CENTER ALIGN COLUMNS
+  {
+    headerName: "Gender",
+    field: "gender",
+    width: 110,
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+  },
+  {
+    headerName: "City",
+    field: "city",
+    width: 130,
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+  },
+  {
+    headerName: "Date of Birth",
+    field: "dob",
+    width: 130,
+    valueFormatter: (params) => formatDOB(params.value),
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+  },
+  {
+    headerName: "Created Date & Time",
+    field: "createdAt",
+    width: 180,
+    valueFormatter: (params) => formatDate(params.value),
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+  },
+  {
+    headerName: "Updated Date & Time",
+    field: "updatedAt",
+    width: 180,
+    valueFormatter: (params) => formatDate(params.value),
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+  },
+
+  // OPTIONS (CENTER)
+  {
+    headerName: "Options",
+    width: 140,
+    cellRenderer: (params) => (
+      <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+        <div className="icon-btn edit-btn" onClick={() => handleEdit(params.data)}>
+          <FaEdit size={14} />
+        </div>
+        <div
+          className="icon-btn delete-btn"
+          onClick={() => handleDelete(params.data.id)}
+        >
+          <FaTrash size={14} />
+        </div>
+      </div>
+    ),
+    cellClass: "ag-center",
+    headerClass: "ag-center",
+  },
+];
+
 
   const defaultColDef = {
-    flex: 1,
     minWidth: 140,
     sortable: true,
     filter: true,
@@ -145,39 +177,39 @@ function App() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Encrypt the password before sending to backend
-    const dataToSend = {
-      ...formData,
-      password: encryptPassword(formData.password)
-    };
+  const dataToSend = { ...formData };
 
-    const url =
-      editingId === null
-        ? "http://localhost:8080/users"
-        : `http://localhost:8080/users/${editingId}`;
+  // Only send encrypted password when creating a NEW user
+  if (editingId === null) {
+    dataToSend.password = encryptPassword(formData.password);
+  }
 
-    const method = editingId === null ? "POST" : "PUT";
+  const url =
+    editingId === null
+      ? "http://localhost:8080/users"
+      : `http://localhost:8080/users/${editingId}`;
 
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
+  const method = editingId === null ? "POST" : "PUT";
 
-      const result = await response.json();
+  try {
+    const response = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dataToSend),
+    });
 
-      if (editingId === null) {
-        setRowData((prev) => [...prev, result]);
-      } else {
-        setRowData((prev) =>
-          prev.map((row) => (row.id === editingId ? result : row))
-        );
-        setEditingId(null);
-      }
+    const result = await response.json();
 
+    // ❌ Handle backend validation errors (400)
+    if (!response.ok) {
+      console.error("Validation Error:", result);
+
+      // Show clean message if available
+      alert(result.message || "Either name or email already exists. Please use unique values.");
+
+      // Clear form after failed attempt
       setFormData({
         name: "",
         email: "",
@@ -186,10 +218,36 @@ function App() {
         password: "",
         dob: "",
       });
-    } catch (error) {
-      console.error("Error:", error);
+
+      return; // Do NOT add blank row
     }
-  };
+
+    // ✔ Success: Add or Update row
+    if (editingId === null) {
+      setRowData((prev) => [...prev, result]);
+    } else {
+      setRowData((prev) =>
+        prev.map((row) => (row.id === editingId ? result : row))
+      );
+      setEditingId(null);
+    }
+
+    // ✔ Always clear form on success
+    setFormData({
+      name: "",
+      email: "",
+      gender: "",
+      city: "",
+      password: "",
+      dob: "",
+    });
+
+  } catch (error) {
+    console.error("Network Error:", error);
+    alert("Server error occurred. Try again later.");
+  }
+};
+
 
   const handleEdit = (user) => {
     setEditingId(user.id);
@@ -198,8 +256,7 @@ function App() {
       email: user.email || "",
       gender: user.gender || "",
       city: user.city || "",
-      // Decrypt password for editing
-      password: decryptPassword(user.password) || "",
+      password: "", // Do NOT try to decrypt password
       dob: user.dob || "",
     });
   };
@@ -213,11 +270,19 @@ function App() {
     }
   };
 
-  // FETCH ALL USERS
+  // ---------------- FETCH USERS ---------------------
+
   useEffect(() => {
     fetch("http://localhost:8080/users")
       .then((res) => res.json())
-      .then((data) => setRowData(data))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setRowData(data);
+        } else {
+          console.error("Invalid data:", data);
+          setRowData([]);
+        }
+      })
       .catch((error) => console.error("API error:", error));
   }, []);
 
@@ -229,7 +294,7 @@ function App() {
 
         <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
         <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-        <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password" />
+        <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password (only for new users)" />
         <input name="dob" type="date" value={formData.dob} onChange={handleChange} />
 
         <select name="gender" value={formData.gender} onChange={handleChange}>
@@ -245,13 +310,9 @@ function App() {
         </button>
       </form>
 
-      {/* AG GRID FULL SCREEN WIDTH */}
+      {/* AG GRID */}
       <div className="ag-theme-quartz-dark ag-grid-wrapper">
-        <AgGridReact
-          rowData={rowData}
-          columnDefs={columnDefs}
-          defaultColDef={defaultColDef}
-        />
+        <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={defaultColDef} />
       </div>
     </div>
   );
