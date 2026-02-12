@@ -1,10 +1,12 @@
 package com.example.backend.service;
 
-import java.util.List;  
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.dto.UserRequestDTO;
 import com.example.backend.dto.UserResponseDTO;
@@ -37,28 +39,38 @@ public class UserServiceImpl implements UserService {
                 .map(user -> modelMapper.map(user, UserResponseDTO.class))
                 .toList();
     }
+@Override
+public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
 
-    @Override
-    public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
+    User existing = userRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User not found with id: " + id
+            ));
 
-        User existing = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    // Map all fields except password
+    modelMapper.map(dto, existing);
 
-        modelMapper.map(dto, existing); // updates existing object
-
-        userRepository.save(existing);
-
-        return modelMapper.map(existing, UserResponseDTO.class);
+    // ✨ Only update password if a new one is provided
+    if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+        existing.setPassword(dto.getPassword());
     }
 
+    userRepository.save(existing);
+
+    return modelMapper.map(existing, UserResponseDTO.class);
+}
     @Override
     public UserResponseDTO deleteUser(Long id) {
+
         User existing = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found with id: " + id
+                ));
 
         userRepository.delete(existing);
 
         return modelMapper.map(existing, UserResponseDTO.class);
     }
 }
-

@@ -183,8 +183,17 @@ const handleSubmit = async (e) => {
 
   const dataToSend = { ...formData };
 
-  if (editingId === null) {
+  // ✨ Only encrypt password if provided
+  if (formData.password && formData.password.trim() !== "") {
     dataToSend.password = encryptPassword(formData.password);
+  } else if (editingId === null) {
+    // Password required for new users
+    setPopupMessage("Password is required for new users");
+    setShowPopup(true);
+    return;
+  } else {
+    // ✨ Remove empty password from update request
+    delete dataToSend.password;
   }
 
   const url =
@@ -201,18 +210,15 @@ const handleSubmit = async (e) => {
       body: JSON.stringify(dataToSend),
     });
 
-    // Parse response
     const data = await response.json();
 
-    // Check if response is not ok
     if (!response.ok) {
-      console.log("Error response:", data); // Debug log
+      console.log("Error response:", data);
       setPopupMessage(data.message || "Validation error occurred");
       setShowPopup(true);
       return;
     }
 
-    // Success
     if (editingId === null) {
       setRowData((prev) => [...prev, data]);
     } else {
@@ -283,7 +289,13 @@ const handleSubmit = async (e) => {
 
         <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
         <input name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-        <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password (only for new users)" />
+        <input 
+             name="password" 
+             type="password" 
+             value={formData.password} 
+             onChange={handleChange} 
+             placeholder={editingId === null ? "Password" : "New Password (leave empty to keep current)"} 
+        />
         <input name="dob" type="date" value={formData.dob} onChange={handleChange} />
 
         <select name="gender" value={formData.gender} onChange={handleChange}>

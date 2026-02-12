@@ -1,6 +1,5 @@
 package com.example.backend.validations.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.backend.repository.UserRepository;
@@ -12,22 +11,18 @@ import jakarta.validation.ConstraintValidatorContext;
 @Component
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
-    @Autowired
-    private UserRepository userRepo;
+    private final UserRepository userRepository;
 
-    @Override
-public boolean isValid(String email, ConstraintValidatorContext context) {
-
-    if (userRepo.existsByEmail(email)) {
-
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate("Email already exists")
-               .addConstraintViolation();
-
-        return false;
+    public UniqueEmailValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    return true;
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null || value.isEmpty()) {
+            return true;
+        }
+        return !userRepository.existsByEmail(value);
+    }
 }
 
-}

@@ -9,25 +9,19 @@ import com.example.backend.validations.annotations.UniqueName;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-@Component
+@Component 
 public class UniqueNameValidator implements ConstraintValidator<UniqueName, String> {
 
     @Autowired
-    private UserRepository userRepo;
+    private UserRepository userRepository;
 
     @Override
-public boolean isValid(String name, ConstraintValidatorContext context) {
+    public boolean isValid(String value, ConstraintValidatorContext context) {
 
-    if (userRepo.existsByName(name)) {
+        if (value == null || value.isEmpty()) {
+            return true; // Let @NotBlank handle it
+        }
 
-        context.disableDefaultConstraintViolation();
-        context.buildConstraintViolationWithTemplate("Name already exists")
-               .addConstraintViolation();
-
-        return false;
+        return !userRepository.existsByName(value);
     }
-
-    return true;
-}
-
 }
