@@ -40,6 +40,8 @@ function App() {
 
   const [rowData, setRowData] = useState([]);
   const [editingId, setEditingId] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   const ENCRYPTION_KEY = "Form1234";
 
@@ -176,12 +178,11 @@ function App() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   const dataToSend = { ...formData };
 
-  // Only send encrypted password when creating a NEW user
   if (editingId === null) {
     dataToSend.password = encryptPassword(formData.password);
   }
@@ -200,37 +201,27 @@ function App() {
       body: JSON.stringify(dataToSend),
     });
 
-    const result = await response.json();
+    // Parse response
+    const data = await response.json();
+
+    // Check if response is not ok
     if (!response.ok) {
-      console.error("Validation Error:", result);
-
-      // Show clean message if available
-      alert(result.message || "Either name or email already exists. Please use unique values.");
-
-      // Clear form after failed attempt
-      setFormData({
-        name: "",
-        email: "",
-        gender: "",
-        city: "",
-        password: "",
-        dob: "",
-      });
-
-      return; // Do NOT add blank row
+      console.log("Error response:", data); // Debug log
+      setPopupMessage(data.message || "Validation error occurred");
+      setShowPopup(true);
+      return;
     }
 
-    // ✔ Success: Add or Update row
+    // Success
     if (editingId === null) {
-      setRowData((prev) => [...prev, result]);
+      setRowData((prev) => [...prev, data]);
     } else {
       setRowData((prev) =>
-        prev.map((row) => (row.id === editingId ? result : row))
+        prev.map((row) => (row.id === editingId ? data : row))
       );
       setEditingId(null);
     }
 
-    // ✔ Always clear form on success
     setFormData({
       name: "",
       email: "",
@@ -242,10 +233,10 @@ function App() {
 
   } catch (error) {
     console.error("Network Error:", error);
-    alert("Server error occurred. Try again later.");
+    setPopupMessage("Server error occurred.");
+    setShowPopup(true);
   }
 };
-
 
   const handleEdit = (user) => {
     setEditingId(user.id);
@@ -312,6 +303,15 @@ function App() {
       <div className="ag-theme-quartz-dark ag-grid-wrapper">
         <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={defaultColDef} />
       </div>
+       {showPopup && (
+      <div className="popup-overlay">
+        <div className="popup-box">
+          <h3>Validation Error</h3>
+          <p>{popupMessage}</p>
+          <button onClick={() => setShowPopup(false)}>Close</button>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
