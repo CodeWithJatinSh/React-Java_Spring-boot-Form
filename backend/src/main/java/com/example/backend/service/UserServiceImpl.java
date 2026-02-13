@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.dto.UserRequestDTO;
 import com.example.backend.dto.UserResponseDTO;
+import com.example.backend.dto.UserUpdateDTO;
 import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 
@@ -24,11 +25,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO saveUser(UserRequestDTO dto) {
-
         User user = modelMapper.map(dto, User.class);
-
         userRepository.save(user);
-
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
@@ -39,30 +37,33 @@ public class UserServiceImpl implements UserService {
                 .map(user -> modelMapper.map(user, UserResponseDTO.class))
                 .toList();
     }
-@Override
-public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
 
-    User existing = userRepository.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "User not found with id: " + id
-            ));
+    @Override
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO dto) { 
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "User not found with id: " + id
+                ));
 
-    // Map all fields except password
-    modelMapper.map(dto, existing);
+        // ✨ Store the old password BEFORE mapping
+        String oldPassword = existing.getPassword();
 
-    // ✨ Only update password if a new one is provided
-    if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
-        existing.setPassword(dto.getPassword());
+        // Map all fields from dto to existing user
+        modelMapper.map(dto, existing);
+
+        // ✨ If no new password provided, restore the old password
+        if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
+            existing.setPassword(oldPassword);
+        }
+
+        userRepository.save(existing);
+
+        return modelMapper.map(existing, UserResponseDTO.class);
     }
 
-    userRepository.save(existing);
-
-    return modelMapper.map(existing, UserResponseDTO.class);
-}
     @Override
     public UserResponseDTO deleteUser(Long id) {
-
         User existing = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,

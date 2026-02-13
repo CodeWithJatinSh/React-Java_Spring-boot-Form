@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.backend.dto.UserRequestDTO;
 import com.example.backend.dto.UserResponseDTO;
+import com.example.backend.dto.UserUpdateDTO;
 
 public interface UserService {
 
@@ -11,8 +12,8 @@ public interface UserService {
 
     List<UserResponseDTO> getUsers();
 
-    UserResponseDTO updateUser(Long id, UserRequestDTO dto);
-
+    UserResponseDTO updateUser(Long id, UserUpdateDTO dto);
+    
     UserResponseDTO deleteUser(Long id);
 }
 

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import com.example.backend.dto.UserRequestDTO;
+import com.example.backend.dto.UserUpdateDTO;
 import com.example.backend.dto.UserResponseDTO;
 import com.example.backend.service.UserService;
 
@@ -18,7 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // CREATE
+    // CREATE - Uses UserRequestDTO (with @UniqueEmail and @UniqueName)
     @PostMapping
     public UserResponseDTO createUser(@Valid @RequestBody UserRequestDTO dto) {
         return userService.saveUser(dto);
@@ -30,10 +31,11 @@ public class UserController {
         return userService.getUsers();
     }
 
-    // UPDATE FULLY
+    // UPDATE - Now uses UserUpdateDTO (with @UniqueEmailUpdate and @UniqueNameUpdate)
     @PutMapping("/{id}")
     public UserResponseDTO updateUser(@PathVariable Long id,
-                                      @Valid @RequestBody UserRequestDTO dto) {
+                                      @Valid @RequestBody UserUpdateDTO dto) {
+        dto.setId(id); // Set the ID from path variable to DTO for validation
         return userService.updateUser(id, dto);
     }
 
