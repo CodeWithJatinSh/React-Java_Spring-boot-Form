@@ -1,6 +1,8 @@
 package com.example.backend.exception;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -16,18 +18,20 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler {
 
     // Handles @Valid DTO errors
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
 
-        Map<String, String> response = new HashMap<>();
+                List<String> errors = new ArrayList<>();
 
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            response.put("message", error.getDefaultMessage());
-            break;
-        }
+                for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+                    errors.add(error.getDefaultMessage());
+                }
 
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+                Map<String, Object> response = new HashMap<>();
+                response.put("messages", errors);
+
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+       }
 
     // Handles custom validator errors
     @ExceptionHandler(ConstraintViolationException.class)

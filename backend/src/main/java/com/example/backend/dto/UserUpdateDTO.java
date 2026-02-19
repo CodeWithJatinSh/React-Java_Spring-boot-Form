@@ -2,13 +2,13 @@ package com.example.backend.dto;
 
 import java.time.LocalDate;
 
+import com.example.backend.validations.annotations.AgeCheck;
 import com.example.backend.validations.annotations.UniqueEmailUpdate;
 import com.example.backend.validations.annotations.UniqueNameUpdate;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 public class UserUpdateDTO {
@@ -32,7 +32,7 @@ public class UserUpdateDTO {
     private String password;
 
     @NotNull(message = "Date of birth is required")
-    @Past(message = "Date of birth must be in the past")
+    @AgeCheck
     private LocalDate dob;
 
     // This will be set by the controller from path variable

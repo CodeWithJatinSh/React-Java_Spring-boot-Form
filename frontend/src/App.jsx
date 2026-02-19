@@ -42,7 +42,7 @@ function App() {
   const [rowData, setRowData] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
+  const [popupMessages, setPopupMessages] = useState([]);
 
   const ENCRYPTION_KEY = "Form1234";
 
@@ -205,7 +205,7 @@ function App() {
     if (formData.password && formData.password.trim() !== "") {
       dataToSend.password = encryptPassword(formData.password);
     } else if (editingId === null) {
-      setPopupMessage("Password is required for new users");
+      setPopupMessages(["Password is required for new users"]);
       setShowPopup(true);
       return;
     } else {
@@ -230,7 +230,13 @@ function App() {
 
       if (!response.ok) {
         console.log("Error response:", data);
-        setPopupMessage(data.message || "Validation error occurred");
+        if (data.messages && Array.isArray(data.messages)) {
+          setPopupMessages(data.messages);
+        } else if (data.message) {
+          setPopupMessages([data.message]);
+        } else {
+          setPopupMessages(["Validation error occurred"]);
+        }
         setShowPopup(true);
         return;
       }
@@ -254,7 +260,7 @@ function App() {
       });
     } catch (error) {
       console.error("Network Error:", error);
-      setPopupMessage("Server error occurred.");
+      setPopupMessages(["Server error occurred."]);
       setShowPopup(true);
     }
   };
@@ -343,7 +349,9 @@ function App() {
         <div className="popup-overlay">
           <div className="popup-box">
             <h3>Validation Error</h3>
-            <p>{popupMessage}</p>
+            {popupMessages.map((msg, i) => (
+              <p key={i}>{msg}</p>
+            ))}
             <button onClick={() => setShowPopup(false)}>Close</button>
           </div>
         </div>

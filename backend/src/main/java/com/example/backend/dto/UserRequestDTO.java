@@ -2,13 +2,13 @@ package com.example.backend.dto;
 
 import java.time.LocalDate;
 
+import com.example.backend.validations.annotations.AgeCheck;
 import com.example.backend.validations.annotations.UniqueEmail;
 import com.example.backend.validations.annotations.UniqueName;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 public class UserRequestDTO {
@@ -28,12 +28,11 @@ public class UserRequestDTO {
     @NotBlank(message = "Gender is required")
     private String gender;
 
-    // ✨ REMOVE @NotBlank - Make password optional for updates
     @Size(min = 4, message = "Password must be 4 characters long")
     private String password;
 
     @NotNull(message = "Date of birth is required")
-    @Past(message = "Date of birth must be in the past")
+    @AgeCheck
     private LocalDate dob;
 
     // Getters & Setters
