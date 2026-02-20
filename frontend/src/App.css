@@ -1,5 +1,5 @@
 /* --------------------------------------------- */
-/* Root Layout (Full-width AG Grid Support) */
+/* Root Layout */
 /* --------------------------------------------- */
 #root {
   width: 100%;
@@ -9,7 +9,6 @@
   font-family: "Inter", sans-serif;
 }
 
-/* Main container wrapping form + grid */
 .container {
   width: 100%;
   display: flex;
@@ -19,7 +18,7 @@
 }
 
 /* --------------------------------------------- */
-/* CLEAN MODERN FORM */
+/* FORM */
 /* --------------------------------------------- */
 form {
   display: flex;
@@ -30,14 +29,12 @@ form {
   gap: 20px;
   width: 100%;
   max-width: 480px;
-
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
     0 6px 20px rgba(0, 0, 0, 0.45),
     0 0 24px rgba(0, 0, 0, 0.25);
 }
 
-/* Form Heading */
 h2 {
   text-align: center;
   color: white;
@@ -67,13 +64,11 @@ form input::placeholder {
   color: #8d8d8d;
 }
 
-/* Subtle hover */
 form input:hover,
 form select:hover {
   background-color: #161616;
 }
 
-/* Focus Ring */
 form input:focus,
 form select:focus {
   border-color: #2196f3;
@@ -81,6 +76,66 @@ form select:focus {
   background-color: #161616;
 }
 
+/* --------------------------------------------- */
+/* CUSTOM DATE FIELD                              */
+/* Clicking anywhere on the div calls showPicker */
+/* --------------------------------------------- */
+.date-wrapper {
+  position: relative;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #303030;
+  background-color: #141414;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.date-wrapper:hover {
+  background-color: #161616;
+}
+
+.date-wrapper:focus-within {
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
+  background-color: #161616;
+}
+
+.date-placeholder {
+  color: #8d8d8d;
+  font-size: 0.95rem;
+}
+
+.date-value {
+  color: #efefef;
+  font-size: 0.95rem;
+}
+
+.date-icon {
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+/* Fully hidden — zero size, invisible, no layout impact */
+.date-input-hidden {
+  position: absolute !important;
+  width: 0 !important;
+  height: 0 !important;
+  opacity: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+/* --------------------------------------------- */
+/* ICON BUTTONS */
+/* --------------------------------------------- */
 .icon-btn {
   width: 32px;
   height: 32px;
@@ -93,21 +148,11 @@ form select:focus {
   transition: 0.2s ease;
 }
 
-/* Green for Edit */
-.edit-btn {
-  background: #27ae60;
-}
-.edit-btn:hover {
-  background: #1e8449;
-}
+.edit-btn { background: #27ae60; }
+.edit-btn:hover { background: #1e8449; }
 
-/* Red for Delete */
-.delete-btn {
-  background: #e74c3c;
-}
-.delete-btn:hover {
-  background: #c0392b;
-}
+.delete-btn { background: #e74c3c; }
+.delete-btn:hover { background: #c0392b; }
 
 /* --------------------------------------------- */
 /* SUBMIT BUTTON */
@@ -137,7 +182,7 @@ button:active {
 }
 
 /* --------------------------------------------- */
-/* AG GRID FULL WIDTH */
+/* AG GRID */
 /* --------------------------------------------- */
 .ag-grid-wrapper {
   width: 100%;
@@ -146,7 +191,6 @@ button:active {
   box-shadow: 0 6px 24px rgba(0,0,0,0.45);
 }
 
-/* Default cell styling */
 .ag-cell {
   display: flex;
   align-items: center;
@@ -154,19 +198,16 @@ button:active {
   text-overflow: clip !important;
 }
 
-/* Left-aligned cells */
 .ag-cell.ag-left {
   justify-content: flex-start !important;
   text-align: left !important;
 }
 
-/* Center-aligned cells */
 .ag-cell.ag-center {
   justify-content: center !important;
   text-align: center !important;
 }
 
-/* Header alignment */
 .ag-header-cell.ag-left .ag-header-cell-label {
   justify-content: flex-start !important;
 }
@@ -175,7 +216,6 @@ button:active {
   justify-content: center !important;
 }
 
-/* AG Grid Action Buttons */
 .action-btn {
   padding: 6px 14px;
   border-radius: 6px;
@@ -185,14 +225,14 @@ button:active {
   color: #fff;
   font-weight: 600;
 }
-/* --------------------------------------------- */
-/* DARK THEME POPUP */
-/* --------------------------------------------- */
 
+/* --------------------------------------------- */
+/* POPUP */
+/* --------------------------------------------- */
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(2, 6, 23, 0.8); /* deep dark overlay */
+  background: rgba(2, 6, 23, 0.8);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -201,10 +241,6 @@ button:active {
   animation: fadeIn 0.3s ease-in-out;
 }
 
-/* --------------------------------------------- */
-/* POPUP BOX */
-/* --------------------------------------------- */
-
 .popup-box {
   background: linear-gradient(145deg, #0f172a, #1e293b);
   padding: 35px 30px;
@@ -212,27 +248,19 @@ button:active {
   width: 420px;
   max-width: 90%;
   text-align: center;
-  box-shadow: 
+  box-shadow:
     0 15px 50px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.05);
   color: #e2e8f0;
   animation: popupSlideIn 0.35s ease;
 }
 
-/* --------------------------------------------- */
-/* TITLE */
-/* --------------------------------------------- */
-
 .popup-box h3 {
   margin-bottom: 15px;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ef4444; /* red for error */
+  color: #ef4444;
 }
-
-/* --------------------------------------------- */
-/* MESSAGE */
-/* --------------------------------------------- */
 
 .popup-box p {
   margin: 20px 0;
@@ -240,10 +268,6 @@ button:active {
   line-height: 1.6;
   color: #cbd5e1;
 }
-
-/* --------------------------------------------- */
-/* RED CLOSE BUTTON */
-/* --------------------------------------------- */
 
 .popup-box button {
   margin-top: 20px;
@@ -255,12 +279,12 @@ button:active {
   font-weight: 600;
   cursor: pointer;
   color: white;
-  background: #ef4444; /* solid red */
+  background: #ef4444;
   transition: all 0.2s ease;
 }
 
 .popup-box button:hover {
-  background: #dc2626; /* darker red on hover */
+  background: #dc2626;
   transform: translateY(-2px);
 }
 
@@ -271,21 +295,14 @@ button:active {
 /* --------------------------------------------- */
 /* ANIMATIONS */
 /* --------------------------------------------- */
-
 @keyframes popupSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-25px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(-25px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
 /* --------------------------------------------- */

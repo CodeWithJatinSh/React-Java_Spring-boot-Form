@@ -75,6 +75,16 @@ function App() {
     return `${day} ${month} ${year}, ${formattedHours}:${minutes} ${ampm}`;
   };
 
+  const formatDisplayDOB = (dob) => {
+    if (!dob) return "DD-MMM-YYYY";
+    const [y, m, d] = dob.split("-");
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    return `${d}-${months[parseInt(m) - 1]}-${y}`;
+  };
+
   // ---------------- AG GRID COLUMNS ---------------------
 
   const columnDefs = [
@@ -317,7 +327,25 @@ function App() {
           onChange={handleChange}
           placeholder={editingId === null ? "Password" : "New Password (leave empty to keep current)"}
         />
-        <input name="dob" type="date" value={formData.dob} onChange={handleChange} />
+
+        {/* CUSTOM DATE FIELD */}
+        <div
+          className="date-wrapper"
+          onClick={() => document.getElementById("dobPicker").showPicker()}
+        >
+          <span className={formData.dob ? "date-value" : "date-placeholder"}>
+            {formatDisplayDOB(formData.dob)}
+          </span>
+          <span className="date-icon">📅</span>
+          <input
+            id="dobPicker"
+            name="dob"
+            type="date"
+            value={formData.dob}
+            onChange={handleChange}
+            className="date-input-hidden"
+          />
+        </div>
 
         <select name="gender" value={formData.gender} onChange={handleChange}>
           <option value="">Select Gender</option>
